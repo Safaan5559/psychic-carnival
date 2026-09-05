@@ -1,0 +1,9 @@
+com.py2apk.app-pngs-0 /workspaces/psychic-carnival/app/build/generated/res/pngs/release
+com.py2apk.app-updated_navigation_xml-1 /workspaces/psychic-carnival/app/build/generated/updated_navigation_xml/release
+com.py2apk.app-packageReleaseResources-2 /workspaces/psychic-carnival/app/build/intermediates/incremental/release/packageReleaseResources/merged.dir
+com.py2apk.app-packageReleaseResources-3 /workspaces/psychic-carnival/app/build/intermediates/incremental/release/packageReleaseResources/stripped.dir
+com.py2apk.app-merged-not-compiled-resources-4 /workspaces/psychic-carnival/app/build/intermediates/merged-not-compiled-resources/release
+com.py2apk.app-release-5 /workspaces/psychic-carnival/app/build/intermediates/merged_res/release/mergeReleaseResources
+com.py2apk.app-main-6 /workspaces/psychic-carnival/app/src/main/res
+com.py2apk.app-release-7 /workspaces/psychic-carnival/app/src/release/res
+gradleHome-0 /home/codespace/.gradle

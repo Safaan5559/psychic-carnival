@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent" android:fillViewport="true">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="24dp">
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Py2APK" android:textSize="32sp" android:textStyle="bold" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Python project → Android APK" android:textSize="16sp" android:layout_marginTop="4dp" />
+
+        <com.google.android.material.textfield.TextInputLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="24dp" android:hint="Builder server URL">
+            <com.google.android.material.textfield.TextInputEditText android:id="@+id/serverUrl" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="textUri" android:text="http://10.0.2.2:8080" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button android:id="@+id/pickButton" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Choose Python project (.py / .zip)" android:layout_marginTop="16dp" />
+        <TextView android:id="@+id/fileName" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="No project selected" android:padding="12dp" />
+
+        <com.google.android.material.textfield.TextInputLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="App name" android:layout_marginTop="8dp">
+            <com.google.android.material.textfield.TextInputEditText android:id="@+id/appName" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="My Python App" />
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Package name" android:layout_marginTop="8dp">
+            <com.google.android.material.textfield.TextInputEditText android:id="@+id/packageName" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="com.example.pythonapp" />
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Version name" android:layout_marginTop="8dp">
+            <com.google.android.material.textfield.TextInputEditText android:id="@+id/versionName" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="1.0.0" />
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Version code" android:layout_marginTop="8dp">
+            <com.google.android.material.textfield.TextInputEditText android:id="@+id/versionCode" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="number" android:text="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Python requirements (comma separated)" android:layout_marginTop="8dp">
+            <com.google.android.material.textfield.TextInputEditText android:id="@+id/requirements" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="python3,kivy" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button android:id="@+id/buildButton" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Build APK" android:layout_marginTop="20dp" />
+        <ProgressBar android:id="@+id/progress" style="?android:attr/progressBarStyleHorizontal" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="100" android:progress="0" android:layout_marginTop="16dp" />
+        <TextView android:id="@+id/status" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Ready" android:textSize="15sp" android:paddingTop="12dp" />
+        <Button android:id="@+id/settingsButton" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Android settings" android:layout_marginTop="12dp" />
+    </LinearLayout>
+</ScrollView>

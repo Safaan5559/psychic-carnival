@@ -1,0 +1,6 @@
+[
+    {
+        "merged": "com.py2apk.app-mergeReleaseResources-33:/layout/activity_main.xml",
+        "source": "com.py2apk.app-main-36:/layout/activity_main.xml"
+    }
+]

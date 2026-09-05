@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "com.py2apk.app-release-35:/xml_file_paths.xml.flat",
+        "source": "com.py2apk.app-main-36:/xml/file_paths.xml"
+    },
+    {
+        "merged": "com.py2apk.app-release-35:/layout_activity_main.xml.flat",
+        "source": "com.py2apk.app-main-36:/layout/activity_main.xml"
+    }
+]

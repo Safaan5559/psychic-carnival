@@ -1,0 +1,19 @@
+<lint-module
+    format="1"
+    dir="/workspaces/psychic-carnival/app"
+    name=":app"
+    type="APP"
+    maven="Py2APK:app:unspecified"
+    agpVersion="9.4.0"
+    buildFolder="build"
+    bootClassPath="/tmp/android-sdk/platforms/android-37.0/android.jar:/tmp/android-sdk/build-tools/36.0.0/core-lambda-stubs.jar"
+    javaSourceLevel="17"
+    compileTarget="android-37.0"
+    highlightGradualR8Api="false">
+  <lintOptions
+      abortOnError="true"
+      absolutePaths="true"
+      checkReleaseBuilds="true"
+      explainIssues="true"/>
+  <variant name="release"/>
+</lint-module>

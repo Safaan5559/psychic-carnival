@@ -1,0 +1,17 @@
+R_DEF: Internal format may change without notice
+local
+id appName
+id buildButton
+id fileName
+id packageName
+id pickButton
+id progress
+id requirements
+id serverUrl
+id settingsButton
+id status
+id versionCode
+id versionName
+layout activity_main
+style Theme.Py2APK
+xml file_paths
