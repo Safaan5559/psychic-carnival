@@ -1,0 +1,12 @@
+.env
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+data/
+*.apk
+*.aab
+*.log
+.idea/
+.vscode/
+.DS_Store
