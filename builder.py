@@ -1,22 +1,31 @@
 import asyncio
-import json
 import os
 import re
 import shutil
 import subprocess
 import time
-from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
 
 from config import BUILD_DIR, BUILD_CPU, BUILD_MEMORY, BUILD_PIDS, BUILDER_IMAGE, MAX_BUILD_SECONDS, MAX_LOG_BYTES, MAX_CONCURRENT_BUILDS
-from db import execute, one, now
+from db import execute, now
 
 POOL = ThreadPoolExecutor(max_workers=MAX_CONCURRENT_BUILDS)
 SESSIONS = {}
+HOST_DATA_DIR = Path(os.getenv("HOST_DATA_DIR", "/srv/py2apk/data"))
 
 
 def safe_env(value, default=""):
     return re.sub(r"[^A-Za-z0-9_.,+\- ]", "", value or default)
+
+
+def host_path(container_path):
+    path = Path(container_path)
+    try:
+        relative = path.relative_to(Path("/app/data"))
+        return str(HOST_DATA_DIR / relative)
+    except ValueError:
+        raise RuntimeError("Build path is outside the configured data directory")
 
 
 def emit(build_id, line):
@@ -24,11 +33,10 @@ def emit(build_id, line):
     if not session:
         return
     session["lines"].append(line.rstrip("\n"))
-    if len(session["lines"]) > 2000:
-        session["lines"] = session["lines"][-2000:]
-    for q in list(session["queues"]):
+    session["lines"] = session["lines"][-2000:]
+    for queue in list(session["queues"]):
         try:
-            q.put_nowait(line.rstrip("\n"))
+            queue.put_nowait(line.rstrip("\n"))
         except asyncio.QueueFull:
             pass
 
@@ -40,11 +48,12 @@ def build_sync(build_id, project_dir, metadata):
     out.mkdir(exist_ok=True)
     log_path = work / "build.log"
     started = time.monotonic()
+    host_project = host_path(project_dir)
+    host_out = host_path(out)
     cmd = [
-        "docker", "run", "--rm", "--network", "none",
-        "--cpus", BUILD_CPU, "--memory", BUILD_MEMORY, "--pids-limit", BUILD_PIDS,
-        "--cap-drop", "ALL", "--security-opt", "no-new-privileges",
-        "--tmpfs", "/tmp:rw,nosuid,nodev",
+        "docker", "run", "--rm", "--network", "none", "--cpus", BUILD_CPU,
+        "--memory", BUILD_MEMORY, "--pids-limit", BUILD_PIDS, "--cap-drop", "ALL",
+        "--security-opt", "no-new-privileges", "--tmpfs", "/tmp:rw,nosuid,nodev",
         "-e", f"PY2APK_APP_NAME={safe_env(metadata['app_name'])}",
         "-e", f"PY2APK_PACKAGE={metadata['package_name']}",
         "-e", f"PY2APK_VERSION={metadata['version_name']}",
@@ -52,23 +61,22 @@ def build_sync(build_id, project_dir, metadata):
         "-e", f"PY2APK_ICON={metadata.get('icon_name','')}",
         "-e", f"PY2APK_SPLASH={metadata.get('splash_name','')}",
         "-e", f"PY2APK_REQUIREMENTS={safe_env(metadata.get('requirements','python3,kivy'))}",
-        "-v", f"{project_dir}:/workspace/app:rw",
-        "-v", f"{out}:/workspace/out:rw",
+        "--mount", f"type=bind,src={host_project},dst=/workspace/app",
+        "--mount", f"type=bind,src={host_out},dst=/workspace/out",
         BUILDER_IMAGE,
     ]
-    session = SESSIONS[build_id]
     try:
-        execute_sync = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1)
+        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1)
         with log_path.open("w", encoding="utf-8") as log:
-            for line in execute_sync.stdout:
+            for line in process.stdout:
                 if time.monotonic() - started > MAX_BUILD_SECONDS:
-                    execute_sync.kill()
+                    process.kill()
                     emit(build_id, "[Py2APK] Build timed out and was terminated.")
                     break
                 if log.tell() < MAX_LOG_BYTES:
                     log.write(line)
                 emit(build_id, line)
-            code = execute_sync.wait(timeout=10)
+        code = process.wait(timeout=10)
         if code != 0:
             raise RuntimeError(f"builder exited with code {code}")
         apks = sorted(out.rglob("*.apk"), key=lambda p: p.stat().st_mtime, reverse=True)
@@ -87,7 +95,10 @@ def build_sync(build_id, project_dir, metadata):
         emit(build_id, f"[Py2APK] ERROR: {exc}")
     finally:
         shutil.rmtree(work, ignore_errors=True)
-        session["done"] = True
+        shutil.rmtree(project_dir, ignore_errors=True)
+        session = SESSIONS.get(build_id)
+        if session:
+            session["done"] = True
 
 
 async def start_build(build_id, project_dir, metadata):
@@ -99,7 +110,3 @@ async def start_build(build_id, project_dir, metadata):
 
 def session_for(build_id):
     return SESSIONS.get(build_id)
-
-
-def remove_session(build_id):
-    SESSIONS.pop(build_id, None)
