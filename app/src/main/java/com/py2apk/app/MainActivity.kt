@@ -7,6 +7,7 @@ import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import com.py2apk.app.databinding.ActivityMainBinding
 import kotlinx.coroutines.Dispatchers
@@ -37,7 +38,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         binding.pickButton.setOnClickListener { picker.launch(arrayOf("text/x-python", "application/zip", "text/plain", "application/octet-stream")) }
         binding.buildButton.setOnClickListener { startBuild() }
         binding.settingsButton.setOnClickListener { startActivity(Intent(Settings.ACTION_SETTINGS)) }
@@ -47,14 +47,10 @@ class MainActivity : AppCompatActivity() {
     private fun startBuild() {
         val uri = selectedUri ?: return
         val server = binding.serverUrl.text.toString().trim().removeSuffix("/")
-        if (server.isBlank()) {
-            toast("Enter a builder server URL")
-            return
-        }
+        if (server.isBlank()) { toast("Enter a builder server URL"); return }
         binding.buildButton.isEnabled = false
         binding.progress.progress = 0
         binding.status.text = "Uploading project…"
-
         lifecycleScope.launch {
             try {
                 val result = withContext(Dispatchers.IO) { upload(server, uri) }
@@ -72,8 +68,7 @@ class MainActivity : AppCompatActivity() {
         repeat(120) {
             val result = withContext(Dispatchers.IO) { getJson("$server/v1/builds/$id") }
             val status = result.optString("status", "unknown")
-            val progress = result.optInt("progress", 0).coerceIn(0, 100)
-            binding.progress.progress = progress
+            binding.progress.progress = result.optInt("progress", 0).coerceIn(0, 100)
             binding.status.text = result.optString("message", status)
             if (status == "completed") {
                 val apkUrl = result.optString("apk_url")
@@ -81,20 +76,16 @@ class MainActivity : AppCompatActivity() {
                 binding.buildButton.isEnabled = true
                 return
             }
-            if (status == "failed") {
-                binding.buildButton.isEnabled = true
-                return
-            }
+            if (status == "failed") { binding.buildButton.isEnabled = true; return }
             kotlinx.coroutines.delay(2000)
         }
-        binding.status.text = "Build is still running. You can check the same build again."
+        binding.status.text = "Build is still running."
         binding.buildButton.isEnabled = true
     }
 
     private fun upload(server: String, uri: Uri): JSONObject {
-        val url = URL("$server/v1/builds")
+        val connection = URL("$server/v1/builds").openConnection() as HttpURLConnection
         val boundary = "----Py2APK${System.currentTimeMillis()}"
-        val connection = url.openConnection() as HttpURLConnection
         connection.requestMethod = "POST"
         connection.doOutput = true
         connection.connectTimeout = 15000
@@ -106,9 +97,7 @@ class MainActivity : AppCompatActivity() {
             form(out, boundary, "version_name", binding.versionName.text.toString())
             form(out, boundary, "version_code", binding.versionCode.text.toString())
             form(out, boundary, "requirements", binding.requirements.text.toString())
-            out.write("--$boundary\r\n".toByteArray())
-            out.write("Content-Disposition: form-data; name=\"file\"; filename=\"$selectedName\"\r\n".toByteArray())
-            out.write("Content-Type: application/octet-stream\r\n\r\n".toByteArray())
+            out.write("--$boundary\r\nContent-Disposition: form-data; name=\"file\"; filename=\"$selectedName\"\r\nContent-Type: application/octet-stream\r\n\r\n".toByteArray())
             contentResolver.openInputStream(uri)!!.use { input -> input.copyTo(out) }
             out.write("\r\n--$boundary--\r\n".toByteArray())
         }
@@ -119,7 +108,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun form(out: java.io.OutputStream, boundary: String, name: String, value: String) {
-        out.write("--$boundary\r\nContent-Disposition: form-data; name=\"$name\"\r\n\r\n${value}\r\n".toByteArray())
+        out.write("--$boundary\r\nContent-Disposition: form-data; name=\"$name\"\r\n\r\n$value\r\n".toByteArray())
     }
 
     private fun getJson(urlString: String): JSONObject {
@@ -142,13 +131,14 @@ class MainActivity : AppCompatActivity() {
             connection.readTimeout = 60000
             BufferedInputStream(connection.inputStream).use { input -> FileOutputStream(temp).use { output -> input.copyTo(output) } }
         }
+        val shareUri = FileProvider.getUriForFile(this, "com.py2apk.app.fileprovider", temp)
         val intent = Intent(Intent.ACTION_SEND).apply {
             type = "application/vnd.android.package-archive"
-            putExtra(Intent.EXTRA_STREAM, Uri.fromFile(temp))
+            putExtra(Intent.EXTRA_STREAM, shareUri)
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
         binding.status.text = "APK ready: ${temp.name}"
-        Toast.makeText(this, "APK downloaded. Use your file manager to save/share it.", Toast.LENGTH_LONG).show()
+        Toast.makeText(this, "APK downloaded. Choose a file app to save it.", Toast.LENGTH_LONG).show()
         startActivity(Intent.createChooser(intent, "Save or share APK"))
     }
 
