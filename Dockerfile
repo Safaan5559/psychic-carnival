@@ -5,6 +5,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends docker.io ca-ce
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
-RUN mkdir -p /app/data/uploads /app/data/builds
+RUN mkdir -p /app/data/projects /app/data/builds
 EXPOSE 8080
-CMD ["python","app.py"]
+CMD ["python","server.py"]
