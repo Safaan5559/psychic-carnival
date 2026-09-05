@@ -11,6 +11,15 @@ services:
     depends_on:
       builder-image:
         condition: service_completed_successfully
+
+  email-notifier:
+    build: .
+    restart: unless-stopped
+    command: ["python", "email_notifier.py"]
+    env_file: .env
+    volumes:
+      - ${HOST_DATA_DIR:-/srv/py2apk/data}:/app/data
+
   builder-image:
     build:
       context: .
