@@ -1,43 +1,50 @@
-# Py2APK
+# Py2APK — Android APK app
 
-A production-oriented Python-to-Android APK builder with a Tornado web UI, SQLite metadata store, and isolated Docker builds using Buildozer/python-for-Android.
+Py2APK is now a **native Android application**, not a website.
 
-> This repository was created in `Safaan5559/psychic-carnival` because the connected GitHub account currently does not expose a repository-creation action. You can rename the repository to `Py2APK` in GitHub settings without changing the code.
+The Android app lets you select a Python `.py` file or `.zip` project, enter Android app metadata, send the project to a Py2APK build server, monitor the build, and receive the generated APK.
 
-## Features
+## Android app
 
-- Python `.py` and `.zip` uploads
-- Drag-and-drop responsive dashboard
-- Custom app name, package, version name/code, icon and optional splash
-- Background build queue
-- Real-time Server-Sent Events build logs
-- Docker-isolated builds with CPU/RAM/PID/time limits
-- SQLite build history and statistics
-- Password authentication with secure password hashing
-- Search and pagination
-- Retry/delete/cleanup flows
-- Downloadable APK and logs
-- Docker Compose deployment
-- Environment-based configuration
+- Native Kotlin Android UI
+- No HTML/CSS/JavaScript website
+- Android file picker for `.py` and `.zip`
+- App name, package name, version and Python requirements
+- Upload progress/status
+- Build polling and APK delivery
+- Secure Android `FileProvider` for sharing generated APKs
+- Release build configuration with R8 shrinking
 
-## Packaging engine
+## Build the Android APK
 
-Builds use Buildozer on top of python-for-android. Android SDK/NDK/JDK dependencies live in a dedicated builder image; uploaded code is mounted only into the build container.
+Open this repository in Android Studio and build:
 
-## Quick start
+```bash
+./gradlew assembleRelease
+```
+
+The Android project uses Android Gradle Plugin 9.4.0, Gradle 9.6, JDK 17 and compile/target SDK 37.
+
+## Build service
+
+Converting arbitrary Python projects into Android APKs requires an Android build toolchain, so the phone app uses a **headless** build API. There is no web dashboard.
+
+The service accepts a project at `POST /v1/builds`, builds it in an isolated Docker container using Buildozer/python-for-Android, and exposes status at `GET /v1/builds/{id}` and the APK at `GET /v1/builds/{id}/apk`.
+
+Start the headless service with Docker Compose:
 
 ```bash
 cp .env.example .env
-mkdir -p data storage
-
 docker compose build
 docker compose up -d
 ```
 
-Open `http://localhost:8080` and register a local account.
+Then set the service address in the Android app's **Builder server URL** field.
 
-## Important production security note
+## Important limitation
 
-The web container needs access to the Docker Engine to create short-lived build containers. A mounted Docker socket is effectively host-level Docker access. For a public deployment, run the build worker against a dedicated Docker daemon/VM or replace the socket connection with a tightly isolated build service.
+The APK itself is the Android client. It does **not** contain a complete Android SDK/NDK plus Python packaging toolchain because that would be far too large and unsuitable for a normal phone app. The actual APK compilation therefore runs on the dedicated headless builder service.
 
-See `docs/DEPLOYMENT.md` for the production checklist.
+## Security
+
+Uploaded projects are validated before extraction and the actual Android build runs in a short-lived Docker container with no network, CPU/RAM/PID limits, dropped Linux capabilities, and a build timeout. A production deployment should use a dedicated build machine/VM because access to the Docker socket is highly privileged.
