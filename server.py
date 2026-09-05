@@ -1,13 +1,13 @@
-import json
 import os
 import shutil
 import uuid
 import zipfile
+from datetime import datetime, timezone
 from pathlib import Path
 
-import tornado.web
-import tornado.ioloop
 import tornado.httpserver
+import tornado.ioloop
+import tornado.web
 
 from builder import start_build
 from config import DATA_DIR, MAX_UPLOAD_MB, BASE_URL
@@ -39,7 +39,6 @@ def safe_zip_extract(data: bytes, destination: Path):
 
 class Health(tornado.web.RequestHandler):
     async def get(self):
-        self.set_header("Content-Type", "application/json")
         self.write({"ok": True, "service": "Py2APK Android builder API"})
 
 
@@ -79,18 +78,21 @@ class Builds(tornado.web.RequestHandler):
             version_name = arg("version_name", "1.0.0")[:32]
             version_code = int(arg("version_code", "1"))
             requirements = arg("requirements", "python3,kivy")[:512]
-            if not package_name.replace(".", "").replace("_", "").isalnum() or not package_name.startswith("com."):
+            parts = package_name.split(".")
+            if len(parts) < 2 or any(not p or not p[0].islower() or not all(c.isalnum() or c == '_' for c in p) for p in parts):
                 raise ValueError("Use a valid package name such as com.example.app")
             if version_code < 1:
                 raise ValueError("Version code must be positive")
 
-            await execute("INSERT INTO builds(id,user_id,filename,status,created_at,package_name,app_name,version_name,version_code) VALUES(?,?,?,?,?,?,?,?,?)",
-                          (build_id, None, filename, "queued", __import__('datetime').datetime.now(__import__('datetime').timezone.utc).isoformat(), package_name, app_name, version_name, version_code))
+            await execute(
+                "INSERT INTO builds(id,user_id,filename,status,created_at,package_name,app_name,version_name,version_code) VALUES(?,?,?,?,?,?,?,?,?)",
+                (build_id, None, filename, "queued", datetime.now(timezone.utc).isoformat(), package_name, app_name, version_name, version_code),
+            )
             self.set_status(202)
             self.write({"id": build_id, "status": "queued", "message": "Build queued"})
             tornado.ioloop.IOLoop.current().spawn_callback(start_build, build_id, project, {
                 "app_name": app_name, "package_name": package_name, "version_name": version_name,
-                "version_code": version_code, "requirements": requirements
+                "version_code": version_code, "requirements": requirements,
             })
         except Exception as exc:
             shutil.rmtree(project, ignore_errors=True)
@@ -99,17 +101,18 @@ class Builds(tornado.web.RequestHandler):
 
 class BuildStatus(tornado.web.RequestHandler):
     async def get(self, build_id):
-        row = await one("SELECT id,status,package_name,app_name,version_name,version_code,error,apk_path,finished_at,duration_seconds FROM builds WHERE id=?", (build_id,))
+        row = await one("SELECT id,status,package_name,app_name,version_name,version_code,error,apk_path,duration_seconds FROM builds WHERE id=?", (build_id,))
         if not row:
             self.set_status(404); self.write({"error": "build not found"}); return
         status = row["status"]
         mapped = "completed" if status == "success" else status
         response = {
-            "id": row["id"], "status": mapped, "progress": 100 if mapped == "completed" else (0 if mapped == "queued" else 50),
+            "id": row["id"], "status": mapped,
+            "progress": 100 if mapped == "completed" else (0 if mapped == "queued" else 50),
             "message": "APK ready" if mapped == "completed" else (row["error"] or mapped),
             "package_name": row["package_name"], "app_name": row["app_name"],
             "version_name": row["version_name"], "version_code": row["version_code"],
-            "duration_seconds": row["duration_seconds"]
+            "duration_seconds": row["duration_seconds"],
         }
         if mapped == "completed": response["apk_url"] = f"{BASE_URL}/v1/builds/{build_id}/apk"
         self.write(response)
@@ -144,8 +147,9 @@ async def main():
     server = tornado.httpserver.HTTPServer(make_app())
     server.listen(int(os.getenv("PORT", "8080")), address=os.getenv("HOST", "0.0.0.0"))
     print("Py2APK headless Android builder API listening on port 8080", flush=True)
-    await tornado.ioloop.IOLoop.current().start()
 
 
 if __name__ == "__main__":
-    tornado.ioloop.IOLoop.current().run_sync(main)
+    loop = tornado.ioloop.IOLoop.current()
+    loop.run_sync(main)
+    loop.start()
