@@ -1,0 +1,20 @@
+services:
+  py2apk:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    env_file: .env
+    volumes:
+      - ./data:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      builder-image:
+        condition: service_completed_successfully
+  builder-image:
+    build:
+      context: .
+      dockerfile: Dockerfile.builder
+    image: py2apk-builder:latest
+    command: ["true"]
+    restart: "no"
