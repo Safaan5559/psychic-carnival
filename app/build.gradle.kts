@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -17,8 +19,35 @@ android {
 
     buildFeatures { viewBinding = true }
 
+    signingConfigs {
+        create("release") {
+            val keystorePath = providers.environmentVariable("PY2APK_KEYSTORE_PATH").orNull
+            val keystorePassword = providers.environmentVariable("PY2APK_KEYSTORE_PASSWORD").orNull
+            val keyAlias = providers.environmentVariable("PY2APK_KEY_ALIAS").orNull
+            val keyPassword = providers.environmentVariable("PY2APK_KEY_PASSWORD").orNull
+
+            if (!keystorePath.isNullOrBlank() && !keystorePassword.isNullOrBlank() &&
+                !keyAlias.isNullOrBlank() && !keyPassword.isNullOrBlank()) {
+                storeFile = file(keystorePath)
+                storePassword = keystorePassword
+                this.keyAlias = keyAlias
+                this.keyPassword = keyPassword
+            }
+        }
+    }
+
     buildTypes {
         release {
+            val signingReady = signingConfigs.getByName("release").storeFile != null
+            if (signingReady) {
+                signingConfig = signingConfigs.getByName("release")
+            } else {
+                throw GradleException(
+                    "Release signing is not configured. Set PY2APK_KEYSTORE_PATH, " +
+                        "PY2APK_KEYSTORE_PASSWORD, PY2APK_KEY_ALIAS, and PY2APK_KEY_PASSWORD."
+                )
+            }
+
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
