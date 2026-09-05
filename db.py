@@ -4,15 +4,9 @@ from config import DB_PATH
 
 SCHEMA = """
 PRAGMA journal_mode=WAL;
-CREATE TABLE IF NOT EXISTS users (
- id INTEGER PRIMARY KEY AUTOINCREMENT,
- email TEXT NOT NULL UNIQUE,
- password_hash TEXT NOT NULL,
- created_at TEXT NOT NULL
-);
 CREATE TABLE IF NOT EXISTS builds (
  id TEXT PRIMARY KEY,
- user_id INTEGER NOT NULL,
+ user_id INTEGER,
  filename TEXT NOT NULL,
  status TEXT NOT NULL,
  created_at TEXT NOT NULL,
@@ -26,13 +20,10 @@ CREATE TABLE IF NOT EXISTS builds (
  version_name TEXT NOT NULL,
  version_code INTEGER NOT NULL,
  error TEXT,
- notified_at TEXT,
- FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+ notified_at TEXT
 );
-CREATE INDEX IF NOT EXISTS idx_builds_user_created ON builds(user_id, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_builds_status ON builds(status);
 """
-
 
 def now():
     return datetime.now(timezone.utc).isoformat()
@@ -47,12 +38,6 @@ async def one(query, args=()):
         db.row_factory = aiosqlite.Row
         cur = await db.execute(query, args)
         return await cur.fetchone()
-
-async def all_rows(query, args=()):
-    async with aiosqlite.connect(DB_PATH) as db:
-        db.row_factory = aiosqlite.Row
-        cur = await db.execute(query, args)
-        return await cur.fetchall()
 
 async def execute(query, args=()):
     async with aiosqlite.connect(DB_PATH) as db:
