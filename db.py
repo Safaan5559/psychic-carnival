@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS builds (
  version_name TEXT NOT NULL,
  version_code INTEGER NOT NULL,
  error TEXT,
+ notified_at TEXT,
  FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 CREATE INDEX IF NOT EXISTS idx_builds_user_created ON builds(user_id, created_at DESC);
