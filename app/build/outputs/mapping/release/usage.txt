@@ -17717,6 +17717,7 @@ com.py2apk.app.MainActivity$poll$2$result$1:
     int label
 com.py2apk.app.MainActivity$startBuild$1$result$1:
     int label
+com.py2apk.app.R$drawable
 com.py2apk.app.R$id:
     private void <init>()
 com.py2apk.app.R$layout:

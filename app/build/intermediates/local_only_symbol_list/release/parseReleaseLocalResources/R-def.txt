@@ -1,5 +1,6 @@
 R_DEF: Internal format may change without notice
 local
+drawable app_icon
 id appName
 id buildButton
 id fileName

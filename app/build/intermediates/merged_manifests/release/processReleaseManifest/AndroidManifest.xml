@@ -20,9 +20,12 @@
         android:allowBackup="false"
         android:appComponentFactory="androidx.core.app.CoreComponentFactory"
         android:extractNativeLibs="false"
+        android:icon="@drawable/app_icon"
         android:label="Py2APK"
+        android:roundIcon="@drawable/app_icon"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Py2APK" >
+        android:theme="@style/Theme.Py2APK"
+        android:usesCleartextTraffic="true" >
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.py2apk.app.fileprovider"

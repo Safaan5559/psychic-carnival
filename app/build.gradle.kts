@@ -41,11 +41,6 @@ android {
             val signingReady = signingConfigs.getByName("release").storeFile != null
             if (signingReady) {
                 signingConfig = signingConfigs.getByName("release")
-            } else {
-                throw GradleException(
-                    "Release signing is not configured. Set PY2APK_KEYSTORE_PATH, " +
-                        "PY2APK_KEYSTORE_PASSWORD, PY2APK_KEY_ALIAS, and PY2APK_KEY_PASSWORD."
-                )
             }
 
             isMinifyEnabled = true

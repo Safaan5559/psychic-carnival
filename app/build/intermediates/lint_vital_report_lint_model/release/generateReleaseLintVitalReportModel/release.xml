@@ -27,6 +27,6 @@
       type="MAIN"
       applicationId="com.py2apk.app"
       generatedSourceFolders="build/generated/ap_generated_sources/release/out:build/generated/data_binding_base_class_source_out/release/out"
-      desugaredMethodsFiles="/home/codespace/.gradle/caches/9.6.0/transforms/ff63817b54885adf342fd18dc9fc0b81/transformed/D8BackportedDesugaredMethods.txt">
+      desugaredMethodsFiles="/home/codespace/.gradle/caches/9.6.1/transforms/7b8e11de9239af8b98409415c49767e8/transformed/D8BackportedDesugaredMethods.txt">
   </artifact>
 </variant>

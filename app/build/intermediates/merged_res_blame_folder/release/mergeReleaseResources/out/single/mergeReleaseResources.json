@@ -6,5 +6,9 @@
     {
         "merged": "com.py2apk.app-release-35:/layout_activity_main.xml.flat",
         "source": "com.py2apk.app-main-36:/layout/activity_main.xml"
+    },
+    {
+        "merged": "com.py2apk.app-release-35:/drawable-nodpi_app_icon.png.flat",
+        "source": "com.py2apk.app-main-36:/drawable-nodpi/app_icon.png"
     }
 ]

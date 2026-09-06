@@ -4,24 +4,7 @@
             "outputFile": "com.py2apk.app-mergeReleaseResources-32:/values-zu/values-zu.xml",
             "map": [
                 {
-                    "source": "/home/codespace/.gradle/caches/9.6.0/transforms/4b311e9544ce66123449b645f4f7c3b6/transformed/core-1.17.0/res/values-zu/values-zu.xml",
-                    "from": {
-                        "startLines": "2,3,4,5,6,7,8,9",
-                        "startColumns": "4,4,4,4,4,4,4,4",
-                        "startOffsets": "55,153,257,356,459,565,672,785",
-                        "endColumns": "97,103,98,102,105,106,112,100",
-                        "endOffsets": "148,252,351,454,560,667,780,881"
-                    },
-                    "to": {
-                        "startLines": "37,38,39,40,41,42,43,121",
-                        "startColumns": "4,4,4,4,4,4,4,4",
-                        "startOffsets": "3333,3431,3535,3634,3737,3843,3950,10358",
-                        "endColumns": "97,103,98,102,105,106,112,100",
-                        "endOffsets": "3426,3530,3629,3732,3838,3945,4058,10454"
-                    }
-                },
-                {
-                    "source": "/home/codespace/.gradle/caches/9.6.0/transforms/918ae17321d4e26e07b59fcffa5cfb59/transformed/appcompat-1.8.0/res/values-zu/values-zu.xml",
+                    "source": "/home/codespace/.gradle/caches/9.6.1/transforms/087386697f54dd152c381638acf8ee1c/transformed/appcompat-1.8.0/res/values-zu/values-zu.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
@@ -38,7 +21,24 @@
                     }
                 },
                 {
-                    "source": "/home/codespace/.gradle/caches/9.6.0/transforms/4e57cd584b789c7b4454937dc55c6800/transformed/material-1.13.0/res/values-zu/values-zu.xml",
+                    "source": "/home/codespace/.gradle/caches/9.6.1/transforms/65f005f7248080b653c456b1a8d88a3e/transformed/core-1.17.0/res/values-zu/values-zu.xml",
+                    "from": {
+                        "startLines": "2,3,4,5,6,7,8,9",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,153,257,356,459,565,672,785",
+                        "endColumns": "97,103,98,102,105,106,112,100",
+                        "endOffsets": "148,252,351,454,560,667,780,881"
+                    },
+                    "to": {
+                        "startLines": "37,38,39,40,41,42,43,121",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "3333,3431,3535,3634,3737,3843,3950,10358",
+                        "endColumns": "97,103,98,102,105,106,112,100",
+                        "endOffsets": "3426,3530,3629,3732,3838,3945,4058,10454"
+                    }
+                },
+                {
+                    "source": "/home/codespace/.gradle/caches/9.6.1/transforms/78f6028747afabd0f34dce4cdef4919e/transformed/material-1.13.0/res/values-zu/values-zu.xml",
                     "from": {
                         "startLines": "2,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",

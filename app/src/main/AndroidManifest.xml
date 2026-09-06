@@ -3,6 +3,8 @@
     <application
         android:theme="@style/Theme.Py2APK"
         android:label="Py2APK"
+        android:icon="@drawable/app_icon"
+        android:roundIcon="@drawable/app_icon"
         android:allowBackup="false"
         android:supportsRtl="true"
         android:usesCleartextTraffic="true">

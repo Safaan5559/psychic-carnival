@@ -1,4 +1,5 @@
 com.py2apk.app
+drawable app_icon
 id appName
 id buildButton
 id fileName
