@@ -5,6 +5,7 @@ __pycache__/
 .venv/
 data/
 *.apk
+!app/build/outputs/apk/release/app-release.apk
 *.aab
 *.log
 .idea/
