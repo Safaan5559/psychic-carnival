@@ -1,6 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET" />
-    <application android:theme="@style/Theme.Py2APK" android:label="Py2APK" android:allowBackup="false" android:supportsRtl="true">
+    <application
+        android:theme="@style/Theme.Py2APK"
+        android:label="Py2APK"
+        android:allowBackup="false"
+        android:supportsRtl="true"
+        android:usesCleartextTraffic="true">
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.py2apk.app.fileprovider"
